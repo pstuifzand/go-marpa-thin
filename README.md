@@ -4,6 +4,13 @@ go-marpa-thin
 Go module for libmarpa
 
 
+FILE STRUCTURE
+--------------
+
+* marpa.go - types
+* marpa-gen.go - generated but edited function from marpa\_api.h
+* marpa-value.go - extra functions that are not ports of the library
+* perl/ - directory contains the generator
 
 
 LICENSE

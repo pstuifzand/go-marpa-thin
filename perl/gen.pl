@@ -1,3 +1,19 @@
+# gen.pl - Generates go code from .h include file
+# Copyright (C) 2013 Peter Stuifzand
+#
+# This program is free software: you can redistribute it and/or modify it under
+# the terms of the GNU Lesser General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your option) any
+# later version.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+# details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #!/usr/bin/env perl
 package main;
 use strict;
@@ -8,6 +24,25 @@ use Func::TypeDB;
 push @ARGV, '/home/peter/work/Marpa-R2-2.044000/libmarpa_dist/marpa_api.h';
 
 open my $fh, '>', 'marpa-gen.go' or die 'Can\'t open marpa-gen.go';
+
+print {$fh} <<"LICENSE";
+/* Copyright (C) 2013 Peter Stuifzand
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License for more
+details.
+
+You should have received a copy of the GNU Lesser General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+LICENSE
 
 print {$fh} qq{package marpa\n};
 print {$fh} qq{/*
