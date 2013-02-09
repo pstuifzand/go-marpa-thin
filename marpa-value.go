@@ -18,7 +18,25 @@ package marpa
 func (value *Value) TokenID() SymbolID {
 	return SymbolID(value.handle.t_token_id)
 }
+func (value *Value) Symbol() SymbolID {
+	return SymbolID(value.handle.t_token_id)
+}
 
 func (value *Value) TokenValue() int {
 	return int(value.handle.t_token_value)
+}
+
+func (value *Value) Result() int {
+	return int(value.handle.t_arg_0)
+}
+
+func (value *Value) Rule() RuleID {
+	return RuleID(value.handle.t_rule_id)
+}
+
+func (value *Value) Arg0() int {
+	return int(value.handle.t_arg_0)
+}
+func (value *Value) ArgN() int {
+	return int(value.handle.t_arg_n)
 }

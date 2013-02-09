@@ -24,8 +24,9 @@ use Func::TypeDB;
 push @ARGV, '/home/peter/work/Marpa-R2-2.044000/libmarpa_dist/marpa_api.h';
 
 open my $fh, '>', 'marpa-gen.go' or die 'Can\'t open marpa-gen.go';
+open my $const_fh, '>', 'marpa-gen-const.go' or die 'Can\'t open marpa-gen.go';
 
-print {$fh} <<"LICENSE";
+my $license = <<"LICENSE";
 /* Copyright (C) 2013 Peter Stuifzand
 
 This program is free software: you can redistribute it and/or modify it under
@@ -44,7 +45,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 LICENSE
 
+print {$fh} $license;
+print {$const_fh} $license;
+
 print {$fh} qq{package marpa\n};
+print {$const_fh} qq{package marpa\n};
 print {$fh} qq{/*
 #cgo LDFLAGS: -L. -lmarpa
 #include <marpa.h>
@@ -56,6 +61,8 @@ print {$fh} qq{import "C"\n};
 print {$fh} qq{\n};
 
 my $p = Parse::CDecl->new();
+
+print {$const_fh} "const (\n";
 
 my $comment_start = 0;
 while (<ARGV>) {
@@ -74,7 +81,15 @@ while (<ARGV>) {
     my $decl = $p->parse($_);
     next if !$decl;
 
-    next if ref($decl) eq 'ARRAY' && $decl->[0] eq '#define';
+    #next if ref($decl) eq 'ARRAY' && $decl->[0] eq '#define';
+    if (ref($decl) eq 'ARRAY' && $decl->[0] eq '#define') {
+        my $name = $decl->[1];
+        $name =~ s/^MARPA_//;
+        print {$const_fh} "\t".$name." = ".$decl->[2]."\n";
+        next;
+    }
+
+
     next if $decl->name->name =~ m/^_/;
     next if $decl->name->name =~ m/_ref$|_unref$/;
     next if $decl->name->name eq 'marpa_c_error';
@@ -86,4 +101,6 @@ while (<ARGV>) {
     print {$fh} "\n";
 }
 
+print {$const_fh} ")\n";
+close $const_fh;
 close $fh;

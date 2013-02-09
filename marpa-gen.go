@@ -21,6 +21,11 @@ package marpa
 */
 import "C"
 
+import (
+	"errors"
+	"unsafe"
+)
+
 func MarpaCheckVersion(required_major uint, required_minor uint, required_micro uint) ErrorCode {
 	return ErrorCode(C.marpa_check_version(C.uint(required_major), C.uint(required_minor), C.uint(required_micro)))
 }
@@ -32,6 +37,9 @@ func ConfigInit(config *Config) int {
 func NewGrammar(configuration *Config) *Grammar {
 	var _ret Grammar
 	_ret.handle = C.marpa_g_new(&configuration.handle)
+	if _ret.handle == (C.Marpa_Grammar)(unsafe.Pointer(uintptr(0))) {
+		panic("ERROR: marpa_g_new")
+	}
 	return &_ret
 
 }
@@ -183,8 +191,10 @@ func (g *Grammar) HasCycle() int {
 func NewRecognizer(g *Grammar) *Recognizer {
 	var _ret Recognizer
 	_ret.handle = C.marpa_r_new(g.handle)
+	if _ret.handle == (C.Marpa_Recognizer)(unsafe.Pointer(uintptr(0))) {
+		panic("ERROR marpa_r_new")
+	}
 	return &_ret
-
 }
 
 func (r *Recognizer) StartInput() int {
@@ -263,15 +273,21 @@ func (r *Recognizer) ProgressItem(position *int, origin *EarleySetID) RuleID {
 	return ret
 }
 
-func NewBocage(r *Recognizer, earley_set_ID EarleySetID) *Bocage {
+func NewBocage(r *Recognizer, earley_set_ID EarleySetID) (*Bocage, error) {
 	var _ret Bocage
 	_ret.handle = C.marpa_b_new(r.handle, C.Marpa_Earley_Set_ID(earley_set_ID))
-	return &_ret
+	if _ret.handle == (C.Marpa_Bocage)(unsafe.Pointer(uintptr(0))) {
+		return nil, errors.New("marpa_b_new failed")
+	}
+	return &_ret, nil
 }
 
 func NewOrder(b *Bocage) *Order {
 	var _ret Order
 	_ret.handle = C.marpa_o_new(b.handle)
+	if _ret.handle == (C.Marpa_Order)(unsafe.Pointer(uintptr(0))) {
+		panic("ERROR: marpa_o_new")
+	}
 	return &_ret
 }
 
@@ -290,6 +306,9 @@ func (o *Order) Rank() int {
 func NewTree(o *Order) *Tree {
 	var _ret Tree
 	_ret.handle = C.marpa_t_new(o.handle)
+	if _ret.handle == (C.Marpa_Tree)(unsafe.Pointer(uintptr(0))) {
+		panic("ERROR: marpa_t_new")
+	}
 	return &_ret
 }
 
@@ -338,6 +357,10 @@ func (g *Grammar) Event(event *Event, ix int) EventType {
 
 func (g *Grammar) EventCount() int {
 	return int(C.marpa_g_event_count(g.handle))
+}
+
+func (g *Grammar) Error() ErrorCode {
+	return ErrorCode(C.marpa_g_error(g.handle, (**C.char)(nil)))
 }
 
 func (g *Grammar) ErrorClear() ErrorCode {

@@ -12,6 +12,18 @@ FILE STRUCTURE
 * marpa-value.go - extra functions that are not ports of the library
 * perl/ - directory contains the generator
 
+LIBMARPA
+--------
+
+You need a recent version of libmarpa.a. I did the following to get one.
+
+Download a recent version Marpa::R2 and unpack it. Build the Marpa::R2 module
+and copy the libmarpa.a file to the directory where you unpacked everything.
+
+BUILD
+-----
+
+Use `go build` to build the module.
 
 LICENSE
 -------
