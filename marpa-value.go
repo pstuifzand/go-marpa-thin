@@ -27,7 +27,7 @@ func (value *Value) TokenValue() int {
 }
 
 func (value *Value) Result() int {
-	return int(value.handle.t_arg_0)
+	return int(value.handle.t_result)
 }
 
 func (value *Value) Rule() RuleID {
